@@ -1105,6 +1105,25 @@ footer.site::before{display:none;}
 }
 @media (max-width:860px){.hero .btn-outline.on-light{background:rgba(255,255,255,.75);backdrop-filter:blur(2px);}}
 
+
+/* ===== Правки по замечаниям клиента (06.11.2026) ===== */
+/* О компании: компактный баннер + текстовый список вместо плиток */
+.about-hero{padding:28px 0 32px;}
+.about-hero .ah-title{font-size:clamp(1.6rem,2.8vw,2.3rem);margin-bottom:12px;}
+.about-hero .ah-kicker{margin-bottom:12px;}
+.about-hero .ah-stage{height:250px;max-width:560px;margin-left:auto;width:100%;}
+@media (max-width:900px){.about-hero{padding:24px 0 28px;}.about-hero .ah-stage{height:220px;margin:0 auto;}}
+@media (max-width:480px){.about-hero .ah-stage{height:190px;}}
+.about-list{margin:0 0 1em;padding-left:1.2em;color:var(--slate);max-width:900px;}
+.about-list li{margin:0 0 .5em;padding-left:.2em;line-height:1.55;}
+.about-list li::marker{color:var(--teal);}
+.about-list b{color:var(--ink);}
+/* Демоцентр / Сервис: кнопка заявки напротив заголовка */
+.page-head{display:flex;align-items:center;justify-content:space-between;gap:14px 24px;flex-wrap:wrap;margin:0 0 20px;}
+.page-head h1{margin:0;}
+.page-head-cta{display:flex;align-items:center;gap:10px 16px;flex-wrap:wrap;justify-content:flex-end;}
+.page-head-cta span{font-size:.88rem;color:var(--muted);}
+@media (max-width:600px){.page-head-cta{justify-content:flex-start;}.page-head-cta .btn{width:100%;justify-content:center;}}
 </style>
 </head>
 <body>
@@ -1188,7 +1207,6 @@ footer.site::before{display:none;}
         <h4>Документы</h4>
         <ul>
           <li><a href="#/policy/privacy">Политика конфиденциальности</a></li>
-          <li><a href="#/policy/offer">Публичная оферта</a></li>
         </ul>
       </div>
     </div>
@@ -1553,7 +1571,11 @@ const CATALOG = [
     {id:"iso-multi", name:"Термоэмиссионный масс-спектрометр для сверхточного изотопного состава", blurb:"Термоэмиссионная масс-спектрометрия (TIMS).",
      models:[
       {id:"zms-df-tims", name:"ZMS DF-TIMS-01, MST Technology Co. Ltd. (Китай)", tag:TBD}
-     ]}
+     ]},
+    /* modelRefs — ссылки на модели из другого раздела: карточка модели остаётся одна
+       (в «Анализаторах парниковых газов»), здесь показываются только ссылки на неё */
+    {id:"iso-picarro", name:"Газоанализаторы изотопного состава углерода, кислорода и водорода Picarro", blurb:"Лазерные изотопные анализаторы Picarro (CRDS): изотопный состав C, O, H.",
+     modelRefs:["picarro-li2130i","picarro-l2130i","picarro-l2140i"]}
    ]},
 
   {id:"ghg", name:"Анализаторы парниковых газов",
@@ -1638,6 +1660,10 @@ const MODEL_BY_ID = {};       // "ecs-8020" -> {model, trail:[nodes]}
     if(n.children) index(n.children, t);
   });
 })(CATALOG, []);
+/* modelRefs: подставляем модели из других разделов (без смены их «родного» раздела) */
+Object.values(NODE_BY_PATH).forEach(({node:n}) => {
+  if(n.modelRefs) n.models = n.modelRefs.map(id => MODEL_BY_ID[id] && MODEL_BY_ID[id].model).filter(Boolean);
+});
 const pathOf = trail => trail.map(x=>x.id).join('/');
 const hrefNode = trail => '#/catalog/' + pathOf(trail);
 const countModels = n => (n.models||[]).length + (n.children||[]).reduce((s,c)=>s+countModels(c),0);
@@ -1832,12 +1858,12 @@ Views.about = () => `
   </div>
   <section class="page"><div class="wrap">
   <h2>МС-АНАЛИТИКА сегодня</h2>
-  <ul class="check-list">
-    <li><span class="ico">1</span><div><b>Комплексное оснащение лабораторий</b>, адаптированное к условиям рынка РФ: поддержка пользователей оборудования Thermo Fisher Scientific, поставка оборудования ведущих мировых производителей, а также из КНР и России.</div></li>
-    <li><span class="ico">2</span><div><b>Сервис:</b> монтаж оборудования любой сложности, гарантийное, профилактическое и послегарантийное обслуживание.</div></li>
-    <li><span class="ico">3</span><div><b>Поддержка и сопровождение:</b> демонстрация оборудования с тестированием образцов клиента, разработка методических рекомендаций для специальных экспериментов.</div></li>
-    <li><span class="ico">4</span><div><b>Поставка расходных материалов и запасных частей.</b></div></li>
-    <li><span class="ico">5</span><div><b>Обучение:</b> участие в тематических семинарах с теоретической и практической частью.</div></li>
+  <ul class="about-list">
+    <li><b>Комплексное оснащение лабораторий</b>, адаптированное к условиям рынка РФ: поддержка пользователей оборудования Thermo Fisher Scientific, поставка оборудования ведущих мировых производителей, а также из КНР и России.</li>
+    <li><b>Сервис:</b> монтаж оборудования любой сложности, гарантийное, профилактическое и послегарантийное обслуживание.</li>
+    <li><b>Поддержка и сопровождение:</b> демонстрация оборудования с тестированием образцов клиента, разработка методических рекомендаций для специальных экспериментов.</li>
+    <li><b>Поставка расходных материалов и запасных частей.</b></li>
+    <li><b>Обучение:</b> участие в тематических семинарах с теоретической и практической частью.</li>
   </ul>
   <div class="two-col" style="margin-top:26px;">
     <div>
@@ -1888,7 +1914,8 @@ Views.node = (path) => {
 
 function extraLinks(m, trail){
   const top = trail[0];
-  const paths = m.extra || top.extra || CATALOG.filter(c=>c!==top).slice(0,3).map(c=>c.id);
+  const near = trail.slice().reverse().find(n => n.extra);
+  const paths = m.extra || (near && near.extra) || CATALOG.filter(c=>c!==top).slice(0,3).map(c=>c.id);
   return paths.map(p => NODE_BY_PATH[p]).filter(Boolean).slice(0,5)
     .map(r => `<li><a href="${hrefNode(r.trail)}">${esc(r.node.name)}</a></li>`).join('');
 }
@@ -1935,7 +1962,7 @@ Views.product = (id) => {
 };
 
 Views.demo = () => withSide(`
-  <h1>Демоцентр</h1>
+  <div class="page-head"><h1>Демоцентр</h1><div class="page-head-cta"><span>Посещение проводится по предварительной записи</span><button class="btn btn-primary" onclick="openModal('Посещение демоцентра','Заявка на посещение демоцентра')">Оставить заявку на посещение</button></div></div>
   <div class="demo-rows">
     <div class="media-row">
       <div class="photo"><img src="${IMG.demo}" alt="Оборудование демонстрационной лаборатории МС-АНАЛИТИКА" loading="lazy"></div>
@@ -1951,17 +1978,10 @@ Views.demo = () => withSide(`
       <div class="ph-box">${phEmpty('Фото демоцентра')}</div>
       <div><p>Специалисты компании проведут тестирование ваших образцов и подготовят методические рекомендации для специальных экспериментов.</p></div>
     </div>
-    <div class="media-row">
-      <div class="ph-box">${phEmpty('Фото демоцентра')}</div>
-      <div>
-        <p>Посещение демоцентра проводится по предварительной записи.</p>
-        <button class="btn btn-primary" onclick="openModal('Посещение демоцентра','Заявка на посещение демоцентра')">Оставить заявку на посещение</button>
-      </div>
-    </div>
   </div>`, null);
 
 Views.service = () => withSide(`
-  <h1>Сервис</h1>
+  <div class="page-head"><h1>Сервис</h1><div class="page-head-cta"><button class="btn btn-primary" onclick="openModal('Сервисное обслуживание','Заявка на сервис')">Оставить заявку на сервисное обслуживание</button></div></div>
   <div class="rich-text">
     <p>Инженеры сервисной службы ГК «МС-АНАЛИТИКА» прошли обучение на специализированных курсах и в отделах калибровки и тестирования фирм-производителей и имеют соответствующие сертификаты. Компания имеет лицензию на ремонт медицинской техники.</p>
     <p>Срок гарантийного обслуживания нашего оборудования — от 1 года до 5 лет в зависимости от модели и условий контракта.</p>
@@ -1969,7 +1989,6 @@ Views.service = () => withSide(`
     <p>ГК «МС-АНАЛИТИКА» — единственная в России и СНГ компания с сервисным штатом более 20 специалистов, выполняющая монтаж, запуск, ввод в эксплуатацию, ремонт и обучение персонала по линейке хромато-масс-спектрометрического оборудования Thermo Scientific без привлечения иностранных специалистов, по конкурентным ценам и в оперативные сроки.</p>
     <p>Работы проводятся на русском и/или английском языке по заявке.</p>
   </div>
-  <button class="btn btn-primary" onclick="openModal('Сервисное обслуживание','Заявка на сервис')">Оставить заявку на сервис</button>
   <div class="svc-grid">${['svc1','svc2','svc3','svc4','svc5','svc6'].map((k,i) => `<div class="svc-item"><img src="${IMG[k]}" alt="Инженеры сервисной службы МС-АНАЛИТИКА" loading="lazy"></div>`).join('')}</div>`, null);
 
 const NEWS = [
@@ -2153,7 +2172,7 @@ offer: {
 
 Views.policy = (which) => {
   const d = DOCS[which === 'offer' ? 'offer' : 'privacy'];
-  const other = which === 'offer' ? {href:'#/policy/privacy', t:'Политика конфиденциальности'} : {href:'#/policy/offer', t:'Публичная оферта'};
+  const other = which === 'offer' ? {href:'#/policy/privacy', t:'Политика конфиденциальности'} : null;
   const toc = d.sections.map((s,i) => `<li><a href="#doc-${i+1}" data-anchor="doc-${i+1}">${s[0]}</a></li>`).join('');
   const body = d.sections.map((s,i) => `<section class="doc-sec" id="doc-${i+1}"><h2><span>${i+1}</span>${s[0]}</h2>${s[1]}</section>`).join('');
   return withSide(`
@@ -2161,7 +2180,7 @@ Views.policy = (which) => {
   <div class="doc-head">
     <h1>${d.title}</h1>
     <p class="doc-lede">${d.lede}</p>
-    <div class="doc-meta"><span>Редакция от ${ORG.rev}</span><a href="${other.href}">${other.t} →</a></div>
+    <div class="doc-meta"><span>Редакция от ${ORG.rev}</span>${other ? `<a href="${other.href}">${other.t} →</a>` : ''}</div>
   </div>
   <nav class="doc-toc" aria-label="Содержание"><div class="doc-toc-t">Содержание</div><ol>${toc}</ol></nav>
   <div class="doc rich-text">${body}</div>`, null);
